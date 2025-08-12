@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>골다공증 주사 일정 ics 다운로드</title>
+</head>
+<body>
+<script>
+  function pad(n){ return n<10 ? '0'+n : n; }
+
+  let today = new Date();
+  let sixMonthsLater = new Date(today);
+  sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+
+  // 시작 시간 오전 10시
+  sixMonthsLater.setHours(10, 0, 0);
+
+  // 종료 시간 오전 10시 30분
+  let endTime = new Date(sixMonthsLater);
+  endTime.setMinutes(endTime.getMinutes() + 30);
+
+  // 날짜 포맷 (YYYYMMDDTHHmmssZ)
+  function formatDate(date) {
+    return date.getUTCFullYear().toString() +
+           pad(date.getUTCMonth()+1) +
+           pad(date.getUTCDate()) + 'T' +
+           pad(date.getUTCHours()) +
+           pad(date.getUTCMinutes()) +
+           pad(date.getUTCSeconds()) + 'Z';
+  }
+
+  // .ics 파일 내용 생성
+  let icsContent = 
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//MyClinic//Osteoporosis Shot//EN
+BEGIN:VEVENT
+UID:${Date.now()}@myclinic.com
+DTSTAMP:${formatDate(new Date())}
+DTSTART:${formatDate(sixMonthsLater)}
+DTEND:${formatDate(endTime)}
+SUMMARY:골다공증 주사 맞는 날
+DESCRIPTION:병원 방문하여 주사 맞는 날입니다.
+LOCATION: 
+END:VEVENT
+END:VCALENDAR`;
+
+  // Blob 생성 및 다운로드 링크 만들기
+  let blob = new Blob([icsContent], {type:'text/calendar'});
+  let url = URL.createObjectURL(blob);
+
+  // 다운로드 자동 실행
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = 'osteoporosis_shot.ics';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+</script>
+<p>잠시만 기다려주세요... 일정 파일을 다운로드 중입니다.</p>
+</body>
+</html>
